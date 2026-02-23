@@ -3,137 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YT Live Hub | Global v1.0.0</title>
+    <title id="site-title">YT Live Hub | Elite</title>
+    <link id="favicon" rel="icon" href="https://www.youtube.com/s/desktop/28169661/img/favicon_32.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #4285f4; --accent: #9b72cb; --bg: #000000;
-            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.1);
+            --primary: #4285f4; --accent: #9b72cb; --bg: #000;
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; 
-            overflow: hidden; height: 100vh;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* --- DİNAMİK ARKA PLAN --- */
+        /* Dinamik Arka Plan */
         .bg-aura {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.15), transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(155, 114, 203, 0.15), transparent 40%);
-            animation: auraPulse 10s infinite alternate;
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 10% 10%, rgba(66, 133, 244, 0.1), transparent 50%),
+                        radial-gradient(circle at 90% 90%, rgba(155, 114, 203, 0.1), transparent 50%);
         }
-        @keyframes auraPulse { from { opacity: 0.5; } to { opacity: 1; } }
 
-        /* --- SIDEBAR --- */
+        /* Sidebar */
         .sidebar {
             position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000; padding: 40px 20px;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border); transition: 0.4s; z-index: 1000; padding: 40px 20px;
         }
         .sidebar.active { left: 0; }
         .menu-btn {
-            position: fixed; top: 25px; left: 25px; z-index: 1001; cursor: pointer;
-            background: var(--primary); width: 50px; height: 50px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+            position: fixed; top: 20px; left: 20px; z-index: 1001; cursor: pointer;
+            background: var(--primary); width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .nav-link {
-            padding: 15px; display: flex; align-items: center; gap: 15px;
-            color: #777; text-decoration: none; border-radius: 12px; margin-bottom: 8px;
-            transition: 0.2s; font-weight: 500;
-        }
-        .nav-link:hover, .nav-link.active { background: var(--glass); color: #fff; border: 1px solid var(--border); }
-
-        /* --- DASHBOARD UI --- */
-        .main-container {
-            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-            transition: 0.4s;
-        }
+        /* Dashboard & Pro Card */
+        .container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .pro-card {
-            background: var(--glass); border: 1px solid var(--border);
-            padding: 50px; border-radius: 40px; width: 100%; max-width: 550px;
-            text-align: center; backdrop-filter: blur(30px); box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            background: var(--glass); border: 1px solid var(--border); padding: 40px;
+            border-radius: 35px; width: 100%; max-width: 500px; text-align: center;
+            backdrop-filter: blur(40px); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
 
+        /* Arama & Öneriler */
+        .search-container { position: relative; margin-bottom: 20px; }
         .search-input {
-            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--border);
-            background: rgba(0,0,0,0.5); color: #fff; margin-bottom: 25px; font-size: 1rem;
+            width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05); color: #fff; font-size: 1rem;
+        }
+        .suggestions {
+            position: absolute; top: 105%; left: 0; width: 100%; background: #111;
+            border-radius: 15px; border: 1px solid var(--border); overflow: hidden; z-index: 100; display: none;
+        }
+        .suggestion-item { padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
+        .suggestion-item:hover { background: var(--primary); }
+        .suggestion-item img { width: 30px; height: 30px; border-radius: 50%; }
+
+        /* Inputs */
+        .pro-input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+            background: transparent; color: #fff; margin-top: 10px; font-size: 0.9rem;
         }
 
-        .count-display { font-size: 6rem; font-weight: 900; letter-spacing: -3px; margin: 10px 0; }
-        .pfp-main { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 20px; }
+        /* OBS / Full View */
+        #obs-view { display: none; width: 100%; height: 100%; position: fixed; inset: 0; align-items: center; justify-content: center; }
+        body[data-mode="obs"] .main-ui, body[data-mode="obs"] .sidebar, body[data-mode="obs"] .menu-btn { display: none !important; }
+        body[data-mode="obs"] #obs-view { display: flex !important; }
 
-        /* --- OBS / FULL SCREEN MODE --- */
-        #obs-view { display: none; width: 100%; height: 100%; position: fixed; top: 0; left: 0; align-items: center; justify-content: center; z-index: 999; }
+        /* UI Styles */
+        .count-val { font-size: 5rem; font-weight: 900; letter-spacing: -3px; margin: 10px 0; }
+        .nav-link { padding: 12px; display: flex; align-items: center; gap: 12px; color: #555; text-decoration: none; border-radius: 10px; cursor: pointer; }
+        .nav-link.active, .nav-link:hover { color: #fff; background: var(--glass); }
         
-        /* DATA-MODE SWITCHER (BU KISIM HATALARI ÇÖZER) */
-        body[data-view="obs"] .main-container, body[data-view="obs"] .sidebar, body[data-view="obs"] .menu-btn { display: none !important; }
-        body[data-view="obs"] #obs-view { display: flex !important; }
+        .footer-brand { position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 0.6rem; opacity: 0.3; letter-spacing: 2px; }
 
-        /* --- MOD TASARIMLARI --- */
-        .goal-container { width: 600px; text-align: center; }
-        .goal-bar { width: 100%; height: 35px; background: rgba(255,255,255,0.05); border-radius: 50px; overflow: hidden; border: 1px solid var(--border); margin: 20px 0; }
-        .goal-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: 1.5s cubic-bezier(0.1, 0, 0, 1); width: 0%; }
-
-        .footer-branding { position: absolute; bottom: 30px; width: 100%; text-align: center; font-size: 0.7rem; color: #444; letter-spacing: 2px; }
-        .btn-copy { width: 100%; padding: 20px; border-radius: 15px; border: none; background: #fff; color: #000; font-weight: 900; cursor: pointer; margin-top: 20px; }
-
+        /* Modal / Kullanıcı Sözleşmesi */
+        #tos-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; max-width: 500px; font-size: 0.8rem; line-height: 1.6; border: 1px solid var(--border); }
     </style>
 </head>
-<body data-view="dashboard">
+<body data-mode="ui">
 
     <div class="bg-aura"></div>
-
-    <div class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    <div class="menu-btn" onclick="tSidebar()"><i class="fas fa-bars"></i></div>
 
     <div class="sidebar" id="sidebar">
-        <h2 style="font-weight: 900; margin-bottom: 30px; color: var(--primary);">YT HUB <span style="font-size: 0.8rem; color: #fff;">v1.0.0</span></h2>
-        <div class="nav-link active" onclick="switchTool('sub')"><i class="fas fa-users"></i> Abone Sayacı</div>
-        <div class="nav-link" onclick="switchTool('goal')"><i class="fas fa-bullseye"></i> Abone Hedefi</div>
-        <div class="nav-link" onclick="switchTool('views')"><i class="fas fa-eye"></i> Toplam İzlenme</div>
-        <div class="nav-link" onclick="switchTool('video')"><i class="fas fa-video"></i> Video Sayısı</div>
-        <div class="nav-link" onclick="switchTool('alert')"><i class="fas fa-bell"></i> Abone Alert</div>
-        <div class="nav-link" onclick="switchTool('mile')"><i class="fas fa-trophy"></i> Kilometre Taşı</div>
-        <div class="nav-link" onclick="switchTool('clock')"><i class="fas fa-clock"></i> Yayın Saati</div>
-        <div class="nav-link" onclick="switchTool('social')"><i class="fas fa-share-nodes"></i> Sosyal Kartlar</div>
-        <div class="nav-link" onclick="switchTool('growth')"><i class="fas fa-chart-line"></i> Analiz Modu</div>
-        <div class="nav-link" onclick="switchTool('preview')"><i class="fas fa-image"></i> Küçük Resim Test</div>
-
-        <div style="position: absolute; bottom: 30px; font-size: 0.6rem; color: #333;">
-            © 2026 YT LIVE HUB GLOBAL <br> ALL RIGHTS RESERVED.
+        <h2 style="font-weight: 900; margin-bottom: 25px; color: var(--primary);">YT ELITE <span style="font-size:0.6rem;color:#fff">v1.1.0</span></h2>
+        <div class="nav-link active" onclick="setTool('sub')"><i class="fas fa-users"></i> Abone Sayacı</div>
+        <div class="nav-link" onclick="setTool('goal')"><i class="fas fa-bullseye"></i> Özel Hedef</div>
+        <div class="nav-link" onclick="setTool('chat')"><i class="fas fa-comments"></i> Chat Overlay</div>
+        <div class="nav-link" onclick="setTool('views')"><i class="fas fa-eye"></i> İzlenme Sayısı</div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
+            <div class="nav-link" onclick="toggleTOS()"><i class="fas fa-file-contract"></i> Kullanıcı Sözleşmesi</div>
         </div>
+        <div style="position: absolute; bottom: 30px; font-size: 0.6rem; color: #222;">© 2026 GLOBAL YT HUB</div>
     </div>
 
-    <div class="main-container">
+    <div class="container main-ui">
         <div class="pro-card">
-            <h4 id="tool-name" style="color: var(--primary); letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 20px;">ABONE SAYACI</h4>
-            <input type="text" id="searchInput" class="search-input" placeholder="Kanal adını girin ve Enter..." onkeyup="if(event.key==='Enter') searchChannel()">
+            <h4 id="tool-title" style="color:var(--primary); letter-spacing:3px; font-size:0.7rem; margin-bottom:20px;">ABONE SAYACI</h4>
             
-            <div id="dashboard-content">
-                <img id="pfp" class="pfp-main" src="" style="display: none; margin: 0 auto 20px;">
-                <h2 id="channel-name" style="font-weight: 600;">Global Sisteme Hoş Geldiniz</h2>
-                <div id="count-val" class="count-display">0</div>
+            <div class="search-container">
+                <input type="text" id="sInp" class="search-input" placeholder="Kanal ara..." onkeyup="handleSearch(this.value)">
+                <div id="sugBox" class="suggestions"></div>
             </div>
 
-            <button class="btn-copy" onclick="copyObsLink()">OBS LİNKİNİ KOPYALA</button>
+            <div id="extra-settings">
+                </div>
+            
+            <div id="ui-body" style="margin-top: 20px;">
+                <img id="ui-pfp" src="" style="width:100px;height:100px;border-radius:50%;display:none;margin:0 auto 15px;border:3px solid var(--primary);">
+                <h2 id="ui-name">Kanal Seçilmedi</h2>
+                <div id="ui-count" class="count-val">0</div>
+            </div>
+
+            <button onclick="copyLink()" style="width:100%; padding:18px; border-radius:15px; border:none; background:#fff; color:#000; font-weight:900; cursor:pointer; margin-top:20px;">OBS LİNKİNİ KOPYALA</button>
         </div>
     </div>
 
     <div id="obs-view"></div>
 
-    <div class="footer-branding">GLOBAL YT STREAMING TOOLS • EST 2026</div>
+    <div id="tos-modal" onclick="toggleTOS()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Kullanıcı Sözleşmesi 2026</h3><br>
+            <p>1. Bu araç YouTube API verilerini kullanır. Veriler 2-3 saniye gecikmeli olabilir.<br>
+            2. Yayıncı, bu aracı kullanarak görsellerin telif haklarından kendisi sorumludur.<br>
+            3. Sistem, kaynak tüketimini azaltmak için pasif sekmelerde veri akışını durdurur.<br>
+            4. YT Elite, verileri Firebase üzerinde anonim olarak işler.</p><br>
+            <button onclick="toggleTOS()" style="background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:10px;">Anladım</button>
+        </div>
+    </div>
+
+    <div class="footer-brand">YT HUB ELITE • QUALITY OVER EVERYTHING</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, off } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        // Senin Firebase Bilgilerin
-        const firebaseConfig = {
+        const fConfig = {
             apiKey: "AIzaSyAzyMRYO6GjUpqTtKP9iY747U9P0QHIBN8",
             authDomain: "ytsayac-9efe7.firebaseapp.com",
             projectId: "ytsayac-9efe7",
@@ -143,97 +155,102 @@
             appId: "1:877769345664:web:b5fa6717f18e3217bfb465"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(fConfig);
         const db = getDatabase(app);
-        const YT_KEY = 'AIzaSyArrl6SPjBroMSzpKEsWCrLHzm3PgI1mhw';
+        const KEY = 'AIzaSyArrl6SPjBroMSzpKEsWCrLHzm3PgI1mhw';
 
-        let curId = '', curTool = 'sub';
+        let cId = '', cTool = 'sub', cGoal = 1000, cChat = '', currentRef = null;
 
-        // Sayı Formatlama (3.7K / 1.2M)
-        function format(n) {
-            if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-            if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-            return n;
-        }
+        window.tSidebar = () => document.getElementById('sidebar').classList.toggle('active');
+        window.toggleTOS = () => { const m = document.getElementById('tos-modal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; };
 
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
-        
-        window.switchTool = (t) => {
-            curTool = t;
-            document.getElementById('tool-name').innerText = t.toUpperCase() + " MODU";
-            toggleSidebar();
-        };
-
-        window.searchChannel = async () => {
-            const q = document.getElementById('searchInput').value;
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(q)}&key=${YT_KEY}`);
-            const data = await res.json();
-            if(data.items[0]) {
-                curId = data.items[0].id.channelId;
-                startGlobalSync(curId);
-            }
-        };
-
-        async function startGlobalSync(id) {
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${id}&key=${YT_KEY}`);
-            const data = await res.json();
-            const c = data.items[0];
+        // MOD DEĞİŞİNCE TEMİZLE VE YENİLE (Refresh Mantığı)
+        window.setTool = (t) => {
+            cTool = t;
+            document.getElementById('tool-title').innerText = t.toUpperCase() + " MODU";
+            const settings = document.getElementById('extra-settings');
+            settings.innerHTML = '';
             
-            // Firebase Update
-            set(ref(db, 'global/' + id), {
-                n: c.snippet.title,
-                s: c.statistics.subscriberCount,
-                v: c.statistics.viewCount,
-                vc: c.statistics.videoCount,
-                p: c.snippet.thumbnails.medium.url
-            });
+            if(t === 'goal') settings.innerHTML = `<input type="number" id="gInp" class="pro-input" placeholder="Hedef Sayı Gir (Örn: 5000)" onchange="window.cGoal=this.value">`;
+            if(t === 'chat') settings.innerHTML = `<input type="text" id="cInp" class="pro-input" placeholder="Yayın Linkini Yapıştır" onchange="window.cChat=this.value">`;
+            
+            tSidebar();
+            if(cId) startSync(cId); // Mod değişince otomatik senkronize et (Bug önleyici)
+        };
 
-            onValue(ref(db, 'global/' + id), (snap) => renderUI(snap.val()));
+        // ARAMA VE ÖNERİLER
+        window.handleSearch = async (val) => {
+            if(val.length < 3) return;
+            const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=5&q=${val}&key=${KEY}`);
+            const d = await r.json();
+            const box = document.getElementById('sugBox');
+            box.innerHTML = '';
+            d.items.forEach(i => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `<img src="${i.snippet.thumbnails.default.url}"> <span>${i.snippet.title}</span>`;
+                item.onclick = () => { cId = i.id.channelId; startSync(cId); box.style.display='none'; };
+                box.appendChild(item);
+            });
+            box.style.display = 'block';
+        };
+
+        // DİNAMİK FAVICON VE SYNC
+        async function startSync(id) {
+            // Eski dinleyiciyi durdur (Performans & Kaynak Yönetimi)
+            if(currentRef) off(currentRef);
+
+            const r = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${id}&key=${KEY}`);
+            const d = await r.json();
+            const c = d.items[0];
+
+            // Favicon Değiştir
+            document.getElementById('favicon').href = c.snippet.thumbnails.default.url;
+            document.getElementById('site-title').innerText = c.snippet.title + " | Live";
+
+            set(ref(db, 'elite/' + id), { n: c.snippet.title, s: c.statistics.subscriberCount, v: c.statistics.viewCount, p: c.snippet.thumbnails.medium.url });
+            
+            currentRef = ref(db, 'elite/' + id);
+            onValue(currentRef, (snap) => render(snap.val()));
         }
 
-        function renderUI(data) {
+        function render(data) {
             if(!data) return;
             const subs = parseInt(data.s);
-            
-            // DASHBOARD UPDATE
-            document.getElementById('channel-name').innerText = data.n;
-            document.getElementById('pfp').src = data.p;
-            document.getElementById('pfp').style.display = 'block';
-            document.getElementById('count-val').innerText = format(subs);
+            const fmt = (n) => n >= 1000 ? (n/1000).toFixed(1) + 'K' : n;
 
-            // OBS VIEW RENDER (10 MODUN MANTIĞI)
+            // Dashboard
+            document.getElementById('ui-name').innerText = data.n;
+            document.getElementById('ui-pfp').src = data.p;
+            document.getElementById('ui-pfp').style.display = 'block';
+            document.getElementById('ui-count').innerText = fmt(subs);
+
+            // OBS View
             const obs = document.getElementById('obs-view');
-            if(curTool === 'sub') {
-                obs.innerHTML = `<div style="text-align:center;"><img src="${data.p}" style="width:200px; border-radius:50%; border:8px solid var(--primary); margin-bottom:20px;"><div style="font-size:3rem; font-weight:700;">${data.n}</div><div style="font-size:12rem; font-weight:900;">${format(subs)}</div></div>`;
-            } else if(curTool === 'goal') {
-                const goal = Math.ceil(subs / 1000) * 1000;
-                const perc = ((subs % 1000) / 1000) * 100;
-                obs.innerHTML = `<div class="goal-container"><div style="font-size:2rem; margin-bottom:10px;">Yeni Hedef: ${format(goal)}</div><div class="goal-bar"><div class="goal-fill" style="width:${perc}%"></div></div><div style="font-size:4rem; font-weight:900;">${format(subs)} / ${format(goal)}</div></div>`;
-            } else if(curTool === 'views') {
-                obs.innerHTML = `<div style="text-align:center;"><i class="fas fa-eye" style="font-size:4rem; color:var(--primary); margin-bottom:20px;"></i><div style="font-size:3rem;">Toplam İzlenme</div><div style="font-size:10rem; font-weight:900;">${format(data.v)}</div></div>`;
-            } else if(curTool === 'video') {
-                obs.innerHTML = `<div style="text-align:center;"><i class="fas fa-video" style="font-size:4rem; color:var(--accent); margin-bottom:20px;"></i><div style="font-size:3rem;">Video Sayısı</div><div style="font-size:10rem; font-weight:900;">${data.vc}</div></div>`;
-            } else {
-                obs.innerHTML = `<div style="font-size:3rem; color:var(--primary);">${curTool.toUpperCase()} AKTİF EDİLDİ.</div>`;
+            if(cTool === 'sub') {
+                obs.innerHTML = `<div style="text-align:center;"><img src="${data.p}" style="width:250px; border-radius:50%; border:10px solid var(--primary);"><div style="font-size:4rem; font-weight:900; margin-top:20px;">${data.n}</div><div style="font-size:12rem; font-weight:900; letter-spacing:-5px;">${fmt(subs)}</div></div>`;
+            } else if(cTool === 'goal') {
+                const perc = Math.min((subs / window.cGoal) * 100, 100);
+                obs.innerHTML = `<div style="width:700px; text-align:center;"><div style="font-size:3rem; margin-bottom:15px;">HEDEF: ${fmt(window.cGoal)}</div><div style="width:100%; height:40px; background:rgba(255,255,255,0.1); border-radius:50px; overflow:hidden;"><div style="width:${perc}%; height:100%; background:linear-gradient(90deg, var(--primary), var(--accent)); transition:1s;"></div></div><div style="font-size:5rem; font-weight:900; margin-top:10px;">${fmt(subs)} / ${fmt(window.cGoal)}</div></div>`;
+            } else if(cTool === 'chat') {
+                const vidId = window.cChat.split('v=')[1]?.split('&')[0] || window.cChat.split('/').pop();
+                obs.innerHTML = `<iframe width="400" height="600" src="https://www.youtube.com/live_chat?v=${vidId}&embed_domain=${window.location.hostname}" frameborder="0"></iframe>`;
             }
         }
 
-        window.copyObsLink = () => {
-            if(!curId) return alert("Önce kanal seç!");
+        window.copyLink = () => {
             const u = new URL(window.location.href);
-            u.searchParams.set('id', curId);
-            u.searchParams.set('mode', 'obs');
-            u.searchParams.set('tool', curTool);
+            u.searchParams.set('id', cId); u.searchParams.set('mode', 'obs'); u.searchParams.set('tool', cTool); u.searchParams.set('goal', window.cGoal); u.searchParams.set('chat', window.cChat);
             navigator.clipboard.writeText(u.href);
-            alert("MARKALI OBS LİNKİ KOPYALANDI!");
+            alert("MARKALI OBS LİNKİ HAZIR!");
         };
 
         // Açılış Kontrolü
-        const params = new URLSearchParams(window.location.search);
-        if(params.get('mode') === 'obs') {
-            document.body.setAttribute('data-view', 'obs');
-            curTool = params.get('tool') || 'sub';
-            startGlobalSync(params.get('id'));
+        const p = new URLSearchParams(window.location.search);
+        if(p.get('mode') === 'obs') {
+            document.body.setAttribute('data-mode', 'obs');
+            cTool = p.get('tool'); window.cGoal = p.get('goal'); window.cChat = p.get('chat');
+            startSync(p.get('id'));
         }
     </script>
 </body>
