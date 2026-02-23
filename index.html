@@ -3,107 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YT Live Tools | All-in-One Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <title>YT Live Tools | 2026 Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
             --primary: #4285f4;
             --accent: #9b72cb;
-            --bg: #030303;
-            --sidebar-w: 260px;
+            --bg: #050505;
+            --card: rgba(20, 20, 25, 0.6);
         }
+
+        /* TEMA TASARIMLARI */
+        body.theme-gemini { --primary: #4285f4; --accent: #9b72cb; }
+        body.theme-sunset { --primary: #ff4e50; --accent: #f9d423; }
+        body.theme-matrix { --primary: #00ff41; --accent: #008f11; }
+        body.theme-dark { --primary: #ffffff; --accent: #333333; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        body { 
+            background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; 
+            overflow: hidden; height: 100vh;
+        }
 
-        /* --- SIDEBAR & NAV --- */
+        /* --- HAREKETLİ ARKA PLAN --- */
+        .bg-wrap {
+            position: fixed; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #111, #000);
+        }
+        .blob {
+            position: absolute; width: 500px; height: 500px; 
+            background: var(--primary); filter: blur(120px); opacity: 0.15;
+            border-radius: 50%; animation: move 20s infinite alternate;
+        }
+        .blob2 {
+            position: absolute; right: 0; bottom: 0; width: 400px; height: 400px; 
+            background: var(--accent); filter: blur(120px); opacity: 0.15;
+            border-radius: 50%; animation: move 15s infinite alternate-reverse;
+        }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(20%, 20%); } }
+
+        /* --- SIDEBAR --- */
         .sidebar {
-            position: fixed; left: -260px; top: 0; width: var(--sidebar-w); height: 100%;
-            background: #0a0a0a; border-right: 1px solid #1a1a1a; z-index: 1000;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px;
+            position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
+            background: rgba(0,0,0,0.9); border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 30px 20px; transition: 0.4s; z-index: 1000; backdrop-filter: blur(10px);
         }
         .sidebar.active { left: 0; }
+        .menu-toggle {
+            position: fixed; top: 20px; left: 20px; z-index: 1001; cursor: pointer;
+            background: var(--primary); color: #fff; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center; border-radius: 12px;
+        }
+
+        .nav-item {
+            padding: 14px; display: flex; align-items: center; gap: 15px; color: #666;
+            text-decoration: none; border-radius: 12px; margin-bottom: 5px; transition: 0.2s;
+        }
+        .nav-item.active, .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+        /* --- MAIN UI --- */
+        .main-ui {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            padding: 20px; transition: 0.4s;
+        }
+        .glass-card {
+            background: var(--card); border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px; border-radius: 40px; width: 100%; max-width: 550px;
+            text-align: center; backdrop-filter: blur(20px);
+        }
+
+        /* --- TOOL MODLARI --- */
+        .obs-mode { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; text-align: center; }
         
-        .menu-btn {
-            position: fixed; top: 15px; left: 15px; z-index: 1001;
-            background: var(--primary); border: none; color: white;
-            width: 45px; height: 45px; border-radius: 10px; cursor: pointer;
-        }
+        /* FULL SCREEN KURALLARI */
+        body[data-obs="true"] .sidebar, body[data-obs="true"] .menu-toggle, body[data-obs="true"] .main-ui { display: none; }
+        body[data-obs="true"] .obs-mode { display: flex; }
 
-        .nav-link {
-            display: flex; align-items: center; gap: 12px; padding: 14px;
-            color: #777; text-decoration: none; border-radius: 10px; margin-bottom: 8px; transition: 0.2s;
-        }
-        .nav-link:hover, .nav-link.active { background: rgba(66, 133, 244, 0.15); color: #fff; }
-
-        /* --- CONTENT --- */
-        .container {
-            margin-left: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 20px; transition: 0.3s;
-        }
-
-        .card {
-            background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 30px;
-            padding: 30px; width: 100%; max-width: 500px; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        /* --- COUNTER STYLES --- */
-        .count-main { font-size: 5rem; font-weight: 900; color: #fff; margin: 15px 0; letter-spacing: -2px; }
-        .pfp { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 15px; display: none; }
+        .count-val { font-size: 7rem; font-weight: 900; letter-spacing: -4px; line-height: 1; }
+        .pfp-img { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 20px; }
         
-        .input-box {
-            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #222;
-            background: #151515; color: #fff; margin-bottom: 15px;
+        .search-inp {
+            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2); color: #fff; margin-bottom: 20px; font-size: 1rem;
         }
 
-        /* --- MOBILE ADAPTATION --- */
-        @media (max-width: 768px) {
-            .count-main { font-size: 3.5rem; }
-            .card { padding: 20px; }
+        .footer-copy {
+            position: absolute; bottom: 20px; font-size: 0.7rem; color: #444; width: 100%; text-align: center;
         }
 
-        /* OBS FULL SCREEN MODES */
-        body[data-obs="true"] .sidebar, body[data-obs="true"] .menu-btn { display: none; }
-        body[data-obs="true"] .container { margin: 0; padding: 0; }
-        body[data-obs="true"] .card { border: none; background: transparent; max-width: 100%; box-shadow: none; }
-
+        /* Tema Butonları */
+        .theme-grid { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .t-dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .t-dot:hover { border-color: #fff; }
     </style>
 </head>
-<body>
+<body class="theme-gemini">
 
-    <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    <div class="bg-wrap">
+        <div class="blob"></div>
+        <div class="blob2"></div>
+    </div>
+
+    <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
 
     <div class="sidebar" id="sidebar">
-        <h2 style="margin-bottom: 30px; font-weight: 900;">LIVE TOOLS</h2>
-        <a href="#" class="nav-link active" onclick="showTool('counter')"><i class="fas fa-users"></i> Abone Sayacı</a>
-        <a href="#" class="nav-link" onclick="showTool('goal')"><i class="fas fa-bullseye"></i> Hedef Barı (Goal)</a>
-        <a href="#" class="nav-link" onclick="showTool('chat')"><i class="fas fa-comments"></i> Chat Widget</a>
-        <a href="#" class="nav-link" onclick="showTool('alerts')"><i class="fas fa-bell"></i> Bildirim Paneli</a>
-        <a href="#" class="nav-link" onclick="showTool('thumb')"><i class="fas fa-image"></i> Küçük Resim Testi</a>
-    </div>
-
-    <div class="container">
-        <div class="card" id="mainCard">
-            <div id="tool-title" style="color: var(--primary); font-weight: 700; font-size: 0.8rem; margin-bottom: 20px;">ABONE SAYACI</div>
-            
-            <input type="text" id="qInput" class="input-box" placeholder="Kanal ismi yaz..." onkeyup="if(event.key==='Enter') search()">
-            
-            <div id="content-box">
-                <img src="" id="cImage" class="pfp">
-                <h2 id="cName" style="font-weight: 700;">Bir Kanal Seçin</h2>
-                <div id="cCount" class="count-main">0</div>
-                <div id="cSmall" style="color: #444; font-weight: 500;">Canlı Senkronizasyon</div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 25px;">
-                <button onclick="setMode('fscenter')" style="flex:1; background:#1a1a1a; color:#fff; border:none; padding:12px; border-radius:10px; cursor:pointer;">OBS Modu</button>
-                <button onclick="copy()" style="flex:1; background:var(--primary); color:#fff; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:bold;">Kopyala</button>
+        <h2 style="margin-bottom: 30px; font-weight: 900; color: var(--primary);">LIVE HUB</h2>
+        <a href="#" class="nav-item active" onclick="setTool('counter')"><i class="fas fa-users"></i> Abone Sayacı</a>
+        <a href="#" class="nav-item" onclick="setTool('goal')"><i class="fas fa-tasks"></i> Hedef Barı</a>
+        <a href="#" class="nav-item" onclick="setTool('chat')"><i class="fas fa-comment"></i> Chat Widget</a>
+        <a href="#" class="nav-item" onclick="setTool('alert')"><i class="fas fa-bell"></i> Alert Box</a>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <p style="font-size: 0.8rem; color: #444; margin-bottom: 10px;">TEMA SEÇ</p>
+            <div class="theme-grid">
+                <div class="t-dot" style="background:#4285f4" onclick="setTheme('gemini')"></div>
+                <div class="t-dot" style="background:#ff4e50" onclick="setTheme('sunset')"></div>
+                <div class="t-dot" style="background:#00ff41" onclick="setTheme('matrix')"></div>
+                <div class="t-dot" style="background:#fff" onclick="setTheme('dark')"></div>
             </div>
         </div>
+
+        <div style="position: absolute; bottom: 30px; font-size: 0.7rem; color: #333;">
+            © 2026 YouTube Live Tools <br> Tüm Hakları Saklıdır.
+        </div>
     </div>
+
+    <div class="main-ui">
+        <div class="glass-card">
+            <h3 id="toolName" style="margin-bottom: 20px; font-size: 0.8rem; letter-spacing: 2px; color: var(--primary);">ABONE SAYACI</h3>
+            <input type="text" id="sInp" class="search-inp" placeholder="Kanal ara..." onkeyup="if(event.key==='Enter') search()">
+            
+            <div id="ui-content">
+                <img id="pfp" class="pfp-img" src="" style="display:none">
+                <h2 id="cName">Sistemi Başlat</h2>
+                <div id="cCount" class="count-val">0</div>
+            </div>
+
+            <button onclick="copyLink()" style="width: 100%; margin-top: 20px; padding: 18px; border-radius: 15px; border: none; background: var(--primary); color: #fff; font-weight: 900; cursor: pointer; transition: 0.3s;">
+                LİNKİ KOPYALA (OBS İÇİN)
+            </button>
+        </div>
+    </div>
+
+    <div id="obsView" class="obs-mode">
+        </div>
+
+    <div class="footer-copy">© 2026 YT Live Tools by Gemini</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
@@ -123,76 +170,93 @@
         const db = getDatabase(app);
         const YT_KEY = 'AIzaSyArrl6SPjBroMSzpKEsWCrLHzm3PgI1mhw';
 
-        let curId = '';
-        let curMode = '';
+        let curId = '', curTool = 'counter', curTheme = 'gemini';
 
-        // --- SAYI KISALTMA (3.7K FORMATI) ---
-        function formatCount(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-            return num;
+        function format(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n;
         }
 
-        window.toggleMenu = () => document.getElementById('sidebar').classList.toggle('active');
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
+
+        window.setTheme = (t) => {
+            document.body.className = 'theme-' + t;
+            curTheme = t;
+        };
 
         window.search = async () => {
-            const q = document.getElementById('qInput').value;
-            const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(q)}&key=${YT_KEY}`);
-            const d = await r.json();
-            if(d.items[0]) {
-                curId = d.items[0].id.channelId;
-                updateAndListen(curId);
+            const q = document.getElementById('sInp').value;
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${q}&key=${YT_KEY}`);
+            const data = await res.json();
+            if(data.items[0]) {
+                curId = data.items[0].id.channelId;
+                startSync(curId);
             }
         };
 
-        async function updateAndListen(id) {
-            const r = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${id}&key=${YT_KEY}`);
-            const d = await r.json();
-            if(d.items[0]) {
-                const c = d.items[0];
-                set(ref(db, 'channels/' + id), {
-                    n: c.snippet.title,
-                    s: c.statistics.subscriberCount,
-                    p: c.snippet.thumbnails.medium.url
-                });
-                onValue(ref(db, 'channels/' + id), (s) => render(s.val()));
-            }
+        async function startSync(id) {
+            // Veriyi YouTube'dan çekip Firebase'e bas
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${id}&key=${YT_KEY}`);
+            const data = await res.json();
+            const c = data.items[0];
+            
+            set(ref(db, 'channels/' + id), {
+                n: c.snippet.title,
+                s: c.statistics.subscriberCount,
+                p: c.snippet.thumbnails.medium.url
+            });
+
+            // Firebase'i dinle
+            onValue(ref(db, 'channels/' + id), (s) => render(s.val()));
         }
 
         function render(data) {
             if(!data) return;
-            document.getElementById('cName').innerText = data.n;
-            document.getElementById('cImage').src = data.p;
-            document.getElementById('cImage').style.display = 'inline-block';
-            
-            // Sayı hem tam hem kısa formatta gösterilsin
             const num = parseInt(data.s);
-            document.getElementById('cCount').innerText = formatCount(num);
-            document.getElementById('cSmall').innerText = "Resmi: " + num.toLocaleString('tr-TR');
+            
+            // Dashboard UI
+            document.getElementById('cName').innerText = data.n;
+            document.getElementById('pfp').src = data.p;
+            document.getElementById('pfp').style.display = 'inline-block';
+            document.getElementById('cCount').innerText = format(num);
+
+            // OBS View (Arkaplan temiz, sadece sayaç)
+            const obs = document.getElementById('obsView');
+            if(curTool === 'counter') {
+                obs.innerHTML = `
+                    <div>
+                        <img src="${data.p}" style="width:200px; border-radius:50%; border:8px solid var(--primary); margin-bottom:20px;">
+                        <div style="font-size:3rem; font-weight:800;">${data.n}</div>
+                        <div style="font-size:12rem; font-weight:900; letter-spacing:-5px;">${format(num)}</div>
+                    </div>`;
+            }
         }
 
-        window.showTool = (tool) => {
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('tool-title').innerText = tool.toUpperCase() + " TOOL";
-            toggleMenu();
-            if(tool !== 'counter') alert(tool + " yakında yeni API güncellemeleriyle eklenecek!");
+        window.setTool = (t) => {
+            curTool = t;
+            document.getElementById('toolName').innerText = t.toUpperCase() + " TOOL";
+            toggleSidebar();
         };
 
-        window.setMode = (m) => { curMode = m; alert("OBS Modu Seçildi."); };
-
-        window.copy = () => {
+        window.copyLink = () => {
+            if(!curId) return alert("Önce bir kanal seç!");
             const u = new URL(window.location.href);
             u.searchParams.set('id', curId);
-            if(curMode) u.searchParams.set('mode', curMode);
+            u.searchParams.set('mode', 'obs');
+            u.searchParams.set('tool', curTool);
+            u.searchParams.set('theme', curTheme);
             navigator.clipboard.writeText(u.href);
-            alert("Linki Kopyaladık, OBS'e yapıştırabilirsin!");
+            alert("OBS LİNKİ HAZIR! Kaynak ekle -> Tarayıcı -> Yapıştır.");
         };
 
-        // URL Kontrolü (Açılışta)
-        const params = new URLSearchParams(window.location.search);
-        if(params.get('id')) {
-            if(params.get('mode')) document.body.setAttribute('data-obs', 'true');
-            updateAndListen(params.get('id'));
+        // URL Kontrol
+        const p = new URLSearchParams(window.location.search);
+        if(p.get('mode') === 'obs') {
+            document.body.setAttribute('data-obs', 'true');
+            curTool = p.get('tool') || 'counter';
+            setTheme(p.get('theme') || 'gemini');
+            startSync(p.get('id'));
         }
     </script>
 </body>
